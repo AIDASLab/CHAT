@@ -272,21 +272,6 @@ comparison. `our_solution` is CHAT.
 | Full generation is very slow | Start with restricted `--M` and `--efC` ranges, then remove them for the full paper surface. |
 | Optional backend imports fail | Use the generator Conda environment, or install only the backend dependencies needed for the selected `--impl`. |
 
-## Citation
-
-The final BibTeX entry should be updated after the SIGMOD 2027 proceedings
-metadata is finalized.
-
-```bibtex
-@inproceedings{chat2027hnsw,
-  title     = {Exploiting Structural Properties for Efficient Constraint-Aware
-               HNSW Hyperparameter Tuning},
-  booktitle = {Proceedings of the 2027 International Conference on Management
-               of Data (SIGMOD)},
-  year      = {2027}
-}
-```
-
 ## License
 
 Please add the intended artifact license before public release.
