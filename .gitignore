@@ -1,6 +1,10 @@
 *.png
 *.csv
 *.pyc
+__pycache__/
 *.out
 *.pdf
+.codex
+.agents
 .vscode
+contexts

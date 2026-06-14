@@ -1,26 +1,29 @@
-# hyperparameter_tuner.py
+"""CHAT's main HNSW hyperparameter tuner.
+
+The tuner searches (M, efConstruction) with a ternary-search-like heuristic and
+uses previously observed efSearch values to narrow future efSearch searches.
+Each evaluation is served by GroundTruth, which simulates real tuning cost.
+"""
 
 import math
 import random
-from typing import List, Tuple, Dict, Any
+from typing import List, Tuple
 
 from src.constants import DATASET, IMPL, EFS_MIN, EFS_MAX, SEED, TUNING_BUDGET, RECALL_MIN, EFC_MIN, EFC_MAX, M_MIN, M_MAX
-from src.solutions import postprocess_results, print_optimal_hyperparameters
+from src.solutions import print_optimal_hyperparameters
 from src.solutions.our_solution.utils import EfCGetter, EfSGetterV2
 from src.solutions.our_solution.stats import Stats
 from data.ground_truths.ground_truth import GroundTruth
 
-# --- Constants for the tuning algorithm ---
-# TERNARY_SEARCH_BASE = 2.5
-# TERNARY_SEARCH_FACTOR = 3
+# Controls how many efConstruction candidates are probed before shrinking.
 TERNARY_SEARCH_BASE = 2
 TERNARY_SEARCH_FACTOR = 1
 QPS_PERF_PENALTY = 0.95
 
 class HyperparameterTuner:
     """
-    Encapsulates the entire hyperparameter tuning process to avoid global state
-    and improve code structure.
+    Stateful two-phase tuner:
+    exploration finds promising M regions, exploitation refines the best ones.
     """
     def __init__(self, ground_truth: GroundTruth, recall_min: float = None, qps_min: float = None, tuning_budget: float = TUNING_BUDGET, log_level: int = 1):
         assert (recall_min is None) != (qps_min is None), "Only one of recall_min or qps_min should be set."
@@ -34,7 +37,7 @@ class HyperparameterTuner:
         self.results: List[Tuple[Tuple, Tuple]] = []
         self.stats: Stats = Stats(tuning_budget=tuning_budget, recall_min=recall_min, qps_min=qps_min)
         self.m_to_perf: List[Tuple[int, float]] = []
-        self.searched_hp: set = set()    #* set of (M, efC, efS) tuples
+        self.searched_hp: set = set()
         self.efC_getter = EfCGetter()
         self.efS_getter = EfSGetterV2()
         self.__log_level = log_level    # 1 : info, 2 : debug, 3 : trace
@@ -69,8 +72,8 @@ class HyperparameterTuner:
 
     def _exploration_phase(self):
         """
-        Broadly searches the 'M' parameter space using a ternary search-like approach
-        to identify promising regions.
+        Broadly search M. For each tested M, _find_best_efc_for_m runs a nested
+        efConstruction search and returns the best observed objective.
         """
         m_bottom, m_top = M_MIN, M_MAX
         processed_m = set()
@@ -127,10 +130,8 @@ class HyperparameterTuner:
 
     def _exploitation_phase(self):
         """
-        Exploit promising M values found in exploration:
-        - pick top-K M's by perf
-        - for each M, refine efC around the best-known efC using zigzag expansion
-        - stop when exploitation budget is exhausted
+        Spend half of the remaining budget around the best M values found during
+        exploration. This gives the method a chance to recover local misses.
         """
         if not self.m_to_perf:
             self.__log("Warning: No M configurations found to exploit.", 1)
@@ -199,7 +200,7 @@ class HyperparameterTuner:
 
     def _find_best_efc_for_m(self, m: int, is_exploitation: bool = False) -> float:
         """
-        Finds the best efC for a given M by performing a search over the efC space.
+        Search efConstruction for one M and update the shared efC range heuristic.
         """
         efc_left, efc_right = self.efC_getter.get(m)
         
@@ -255,8 +256,7 @@ class HyperparameterTuner:
 
     def _evaluate_hp(self, m: int, efc: int) -> float:
         """
-        Evaluates a single hyperparameter configuration (M, efC, efS), stores the result,
-        and returns its performance.
+        Choose efSearch, evaluate one HNSW configuration, and cache the result.
         """
         if self.ground_truth.tuning_time > self.tuning_budget:
             return 0.0

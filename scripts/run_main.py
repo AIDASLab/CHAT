@@ -16,7 +16,6 @@ from src.solutions.brute_force.run import run as brute_force
 from src.solutions.random_search.run import run as random_search
 from src.solutions.vd_tuner.run import run as vd_tuner
 from src.solutions.our_solution.run import run as our_solution
-# from src.solutions.our_solution.run_old import run as test_solution
 from src.solutions.grid_search.run import run as grid_search
 from src.solutions.optuna.run import run as optuna
 from src.solutions.nsga.run import run as nsga
@@ -24,6 +23,7 @@ from src.solutions.eci.run import run as eci
 from data.ground_truths.get_qps_dataset import get_qps_metrics_dataset
 
 if __name__ == "__main__":
+    # Edit this matrix to reproduce a subset of the paper experiments.
     IMPLS = [
         "hnswlib",
         "faiss",
@@ -53,12 +53,12 @@ if __name__ == "__main__":
     ]
 
     tasks = []
-    # Case 1: when recall_min is active
+    # Case 1: constrain recall and maximize QPS.
     for impl, dataset, (solution_func, solution_name), sampling_count, recall_min in itertools.product(
         IMPLS, DATASETS, SOLUTIONS, SAMPLING_COUNT, RECALL_MINS
     ):
         tasks.append((impl, dataset, solution_func, solution_name, recall_min, None, sampling_count))
-    # Case 2: when qps_min is active
+    # Case 2: constrain QPS and maximize recall.
     for impl, dataset, (solution_func, solution_name), sampling_count in itertools.product(
         IMPLS, DATASETS, SOLUTIONS, SAMPLING_COUNT
     ):

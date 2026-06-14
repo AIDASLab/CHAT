@@ -1,8 +1,9 @@
-# How To Run Benchs
-## 1. main experiment
-1. Set `TUNING_BUDGET` and `SEED` at `src.constant`
-2. Manipulate configs of `run_main.py` as you want
-3. run `run_main.py`
-4. run `n_seed_to_0.sh` with arg `{SEED}` to move created result into base result directory
-5. In order to postprocess, run `python3 results/postprocess.py` after manipulating its configs
-6. Done. Check the results
+# Benchmark Scripts
+
+Run these scripts from the repository root after generating ground-truth CSVs.
+
+1. Edit experiment lists in `scripts/run_main.py` or `scripts/run_milvus.py`.
+2. Run the selected benchmark script.
+3. Run `python results/postprocess.py` to aggregate saved results and plots.
+
+Ground-truth CSVs must exist at `data/ground_truths/{impl}/{dataset}.csv`.

@@ -225,6 +225,9 @@ class HnswConfig:
     @classmethod
     def from_csv(cls, filename:str, dir:str=None):
         import ast
+        def parse_bool(value):
+            return str(value).strip().lower() in {"1", "true", "yes"}
+
         hnsw_configs = dict()  # (M, efC) -> HnswConfig
         file = f"{dir}/{filename}" if dir else filename
         with open(file, mode='r') as f:
@@ -234,8 +237,8 @@ class HnswConfig:
                 # START OF PARSING
                 impl = str(row[0])
                 dataset_name = str(row[1])
-                recompute = bool(row[2])
-                batch = bool(row[3])
+                recompute = parse_bool(row[2])
+                batch = parse_bool(row[3])
                 M = int(row[4])
                 efC = int(row[5])
                 efS = ast.literal_eval(row[6])

@@ -13,6 +13,8 @@ def get_max_perf(results, M, recall_min=None, qps_min=None):
     )
 
 class EfCGetter:
+    """Infer a narrower efConstruction range for unseen M values."""
+
     def __init__(self):
         self.__data = {}
         self.__ratio_candidates = 0.0
@@ -53,6 +55,8 @@ class EfCGetter:
 
 
 class EfCGetterBase:
+    """No-op efConstruction range helper used for ablation-style comparisons."""
+
     def __init__(self):
         self.__data = {}
         
@@ -160,11 +164,9 @@ class EfSGetter:
 
 class EfSGetterV2:
     """
-    Manages and infers the search range of 'efSearch' (efS) for a given efC.
-    This class is specific to a single M value.
+    Infer efSearch bounds from prior observations.
 
-    This version combines two heuristics for efficient and aggressive search
-    space reduction without sacrificing performance:
+    The bounds combine three monotonicity-inspired heuristics:
     1. Inference from the single closest neighbor.
     2. Linear extrapolation using the two closest neighbors.
     3. Using the Other M values to shrink the search space further.
@@ -250,7 +252,6 @@ class EfSGetterV2:
             upper_efCs = [k for k in self.__data[upper_M] if k >= efC]
             for upper_efC in upper_efCs:
                 efS_min = max(efS_min, self.__data[upper_M][upper_efC])
-        print(f"{initial_max3} {initial_min3} {efS_max} {efS_min}")
         ratio_shrink = size_shrink / (initial_max3 - initial_min3) if (initial_max3 - initial_min3) > 0 else 0.0
         self.__shrinked_degrees_of_heuristic3.append((size_shrink, ratio_shrink))
         
@@ -318,14 +319,7 @@ class EfSGetterV2:
 
 class EfSGetterV3:
     """
-    Manages and infers the search range of 'efSearch' (efS) for a given efC.
-    This class is specific to a single M value.
-
-    This version combines two heuristics for efficient and aggressive search
-    space reduction without sacrificing performance:
-    1. Inference from the single closest neighbor.
-    2. Linear extrapolation using the two closest neighbors.
-    3. Using the Other M values to shrink the search space further.
+    Lightweight efSearch range helper kept for controlled heuristic experiments.
     """
     def __init__(self, mode="heuristic"):
         self.__data = {}  # M -> efC -> efS

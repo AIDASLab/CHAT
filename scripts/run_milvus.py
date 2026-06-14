@@ -24,6 +24,7 @@ from src.solutions.eci.run import run as eci
 from data.ground_truths.get_qps_dataset import get_qps_metrics_dataset
 
 if __name__ == "__main__":
+    # Milvus ground-truth CSVs must be generated before running this benchmark.
     IMPLS = [
         "milvus"
     ]

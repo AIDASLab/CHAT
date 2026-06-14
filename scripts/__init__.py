@@ -12,7 +12,9 @@ from src.solutions.grid_search.run import run as grid_search
 from src.utils import is_already_saved
 
 NUM_CORES = max(os.cpu_count() - 2, 1)
-## Configuration lists (these can remain global or passed as arguments to run_experiments)
+
+# Default benchmark matrix. Individual runner scripts usually override this
+# before building task tuples.
 IMPLS = [
     "hnswlib",
     "faiss",
@@ -51,6 +53,7 @@ SAMPLING_COUNT = [
 ####
 
 def worker_function(params):
+    """Run one solution/dataset/constraint combination in a fresh worker."""
     impl, dataset, solution_func, solution_name, recall_min, qps_min, sampling_count = params
     try:
         if is_already_saved(
@@ -98,10 +101,8 @@ def run_experiments(
     """
     multiprocessing.set_start_method('spawn', force=True)
 
-    # Use multiprocessing.Pool to run tasks in parallel
     with multiprocessing.Pool(processes=num_cores, maxtasksperchild=1) as pool:
-        # maxtasksperchild=1 ensures each child process is fresh after one task,
-        # which can help with memory leaks or resource cleanup, though it adds overhead.
+        # Fresh workers avoid long-running memory growth from plotting/BO libraries.
         for info in pool.imap_unordered(worker_function, tasks):
             if info is not None:
                 print(f"Completed: {info['solution']} for {info['impl']} on {info['dataset']}")
@@ -118,6 +119,7 @@ def run_experiments_from_list(
     sampling_counts: list,
     num_cores: int = NUM_CORES
 ):
+    """Build the standard cartesian-product benchmark task list."""
     all_combinations = list(itertools.product(
         implements, datasets, solutions, recall_mins, [None], sampling_counts
     ))

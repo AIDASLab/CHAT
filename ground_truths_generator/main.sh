@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-python3 ./main.py 2
-python3 ./main.py 4
-python3 ./main.py 6
-python3 ./main.py 8
+cd "$(dirname "$0")"
+
+python3 -B ./main.py "$@"

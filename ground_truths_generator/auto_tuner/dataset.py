@@ -215,6 +215,26 @@ class DatasetYoutube(Dataset):
         self.nq = self.data['test'].shape[0]
         self._recomputed_groundtruth = None
 
+
+class DatasetDeep1M(Dataset):
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        loc = f"{DATA_DIR}/deep1M-256-angular.hdf5"
+        with h5py.File(loc, 'r') as f:
+            self.data = {
+                "train": np.array(f['train']),
+                "test": np.array(f['test']),
+                "neighbors": np.array(f['neighbors'])
+            }
+        self.name = "deep1M-256-angular"
+        self.metric = "cosine"
+        self.dim = self.data['train'].shape[1]
+        self.nb = self.data['train'].shape[0]
+        self.nq = self.data['test'].shape[0]
+        self._recomputed_groundtruth = None
+
+
 class DatasetMSMarco(Dataset):
     
     def __init__(self, **kwargs):
@@ -314,6 +334,7 @@ class DatasetMapping:
             "glove-100-angular": DatasetGlove,
             "sift-128-euclidean": DatasetSift,
             "youtube-1024-angular": DatasetYoutube,
+            "deep1M-256-angular": DatasetDeep1M,
             "msmarco-384-angular": DatasetMSMarco,
             "dbpediaentity-768-angular": DatasetDBpediaEntity,
         }

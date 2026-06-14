@@ -1,17 +1,26 @@
+from csv import reader
 import ast
 import os
-from scipy.interpolate import LinearNDInterpolator
-from csv import reader
-import numpy as np
 import random
+
+import numpy as np
+from scipy.interpolate import LinearNDInterpolator
+
 from src.constants import SEED, MAX_SAMPLING_COUNT
 from src.constants import EFS_MIN, EFS_MAX, TOLERANCE
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-random.seed(SEED)   # SEED = 42
-
 class GroundTruth:
+    """Interpolated performance surface loaded from generated ground-truth CSVs.
+
+    The generator produces one CSV per implementation and dataset under:
+        data/ground_truths/{impl}/{dataset}.csv
+
+    Each call to get(..., tracking_time=True) simulates the cost of evaluating
+    that configuration during tuning by accumulating total/build time.
+    """
+
     def __init__(self, impl: str, dataset: str, sampling_count=None):
         self.impl = impl
         self.dataset = dataset
@@ -25,6 +34,7 @@ class GroundTruth:
         self._get_count = 0
         
     def init(self):
+        """Build interpolation functions over the measured (M, efC, efS) grid."""
         configs = list(self.data.keys())
         points = np.array(configs)
         recalls = np.array([v[0] for v in self.data.values()])
@@ -43,6 +53,12 @@ class GroundTruth:
         results = dict()
         filename = f"{impl}/{dataset}.csv"
         filename = os.path.join(BASE_DIR, filename)
+        if not os.path.exists(filename):
+            raise FileNotFoundError(
+                f"Ground-truth CSV not found: {filename}. "
+                "Generate it with ground_truths_generator/main.py first."
+            )
+        rng = random.Random(SEED)
         with open(filename, "r") as f:
             csv_reader = reader(f)
             header = next(csv_reader)
@@ -56,7 +72,7 @@ class GroundTruth:
                 __recall_raw = ast.literal_eval(row[11])
                 __qps_raw = ast.literal_eval(row[12])
                 if self.__sampling_count and len(__recall_raw) >= self.__sampling_count:
-                    sample_indices = random.sample(range(len(__recall_raw)), self.__sampling_count)
+                    sample_indices = rng.sample(range(len(__recall_raw)), self.__sampling_count)
                     __recall = [__recall_raw[i] for i in sample_indices]
                     __qps = [__qps_raw[i] for i in sample_indices]
                 else:
@@ -73,6 +89,7 @@ class GroundTruth:
         return value
 
     def get(self, M, efC, efS, tracking_time=True):
+        """Return recall, QPS, total time, build time, and index size."""
         if efS < EFS_MIN:
             return 0.0, 0.0, 0.0, 0.0, 0
         if (M, efC, efS) in self.searched_cache:
@@ -87,6 +104,7 @@ class GroundTruth:
         except ValueError as e:
             return 0.0, 0.0, 0.0, 0.0, 0
         if tracking_time:
+            # Reusing the same (M, efC) avoids paying build time twice.
             self.tuning_time += total_time
             if (M, efC) == self.current_hp:
                 self.tuning_time -= build_time
@@ -160,6 +178,7 @@ class GroundTruth:
         return best_efS if best_efS else 0
     
     def get_efS(self, M, efC, target_recall=None, target_qps=None, method="binary", efS_min=EFS_MIN, efS_max=EFS_MAX, tolerance=TOLERANCE, skip_time=False):
+        """Find the smallest efS satisfying either recall or QPS target."""
         assert (target_recall is None) != (target_qps is None), "Only one of recall_min or qps_min should be set."
         if target_recall:
             return self._get_efS_for_recall(M, efC, target_recall, method, efS_min, efS_max, tolerance)

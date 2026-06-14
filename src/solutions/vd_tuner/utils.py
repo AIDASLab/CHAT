@@ -1,21 +1,13 @@
-import sys
-
 from src.constants import TUNING_BUDGET
 from data.ground_truths.ground_truth import GroundTruth 
 
-import joblib
-from scipy.stats import qmc
 import json
 import numpy as np
 import time
-import subprocess as sp
-import random
-# from configure import *
-
-KNOB_PATH = r'/home/vd_tuner/VDTuner/auto-configure/vdtuner/dev/whole_param.json'
-RUN_ENGINE_PATH = r'/home/vd_tuner/VDTuner/vector-db-benchmark-master/run_engine.sh'
 
 class KnobStand:
+    """Normalize and denormalize VDTuner knob values."""
+
     def __init__(self, path) -> None:
         self.path = path    #* KNOB_PATH
         with open(path, 'r') as f:
@@ -48,6 +40,8 @@ class KnobStand:
             return zero_one_val
 
 class MockEnv:
+    """VDTuner-compatible environment backed by the generated GroundTruth model."""
+
     def __init__(self, model:GroundTruth=None, knob_path=None, tuning_budget=TUNING_BUDGET, search_efS=True) -> None:
         self.model = model
         self.knob_stand = KnobStand(knob_path)
