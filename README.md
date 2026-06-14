@@ -272,6 +272,3 @@ comparison. `our_solution` is CHAT.
 | Full generation is very slow | Start with restricted `--M` and `--efC` ranges, then remove them for the full paper surface. |
 | Optional backend imports fail | Use the generator Conda environment, or install only the backend dependencies needed for the selected `--impl`. |
 
-## License
-
-Please add the intended artifact license before public release.
