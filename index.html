@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Project page for CHAT, a constraint-aware tuning framework for HNSW hyperparameters.">
+  <meta name="keywords" content="CHAT, HNSW, VectorDB, Approximate Nearest Neighbor Search, Hyperparameter Tuning">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Exploiting Structural Properties for Efficient Constraint-Aware HNSW Hyperparameter Tuning</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/favicon.ico">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="navbar-menu">
+    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+      <a class="navbar-item" href="https://aidas.snu.ac.kr">
+        <span class="icon">
+          <i class="fas fa-home"></i>
+        </span>
+        <div style="padding-left:5px;">AIDAS Lab</div>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero publication-header">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">
+            Exploiting Structural Properties for Efficient Constraint-Aware HNSW Hyperparameter Tuning
+          </h1>
+
+          <h1 class="title is-4 publication-title publication-conference">
+            SIGMOD 2027
+          </h1>
+
+          <p class="publication-subtitle">
+            CHAT turns HNSW hyperparameter tuning from expensive black-box trial-and-error
+            into a structure-aware search over constraint boundaries.
+          </p>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="mailto:cds06126@snu.ac.kr">Geon Choi</a><sup>1</sup>,</span>
+            <span class="author-block">
+              <a href="mailto:hoeunlee@snu.ac.kr">Hoeun Lee</a><sup>1</sup>,</span>
+            <span class="author-block">
+              <a href="mailto:jaeyoung.do@snu.ac.kr">Jaeyoung Do</a><sup>1,*</sup>
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>Seoul National University</span>
+          </div>
+          <div class="is-size-6 publication-authors has-text-grey">
+            <span class="author-block"><sup>*</sup>Corresponding author</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <span class="link-block">
+                <a href="#"
+                   class="external-link button is-normal is-rounded is-dark is-placeholder"
+                   aria-disabled="true">
+                  <span class="icon">
+                    <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="#"
+                   class="external-link button is-normal is-rounded is-dark is-placeholder"
+                   aria-disabled="true">
+                  <span class="icon">
+                    <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://github.com/AIDASLab/CHAT"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                </a>
+              </span>
+            </div>
+          </div>
+
+          <div class="hero-stats">
+            <div class="hero-stat">
+              <span class="hero-stat-value">45%</span>
+              <span class="hero-stat-label">higher QPS</span>
+            </div>
+            <div class="hero-stat">
+              <span class="hero-stat-value">11%</span>
+              <span class="hero-stat-label">higher Recall</span>
+            </div>
+            <div class="hero-stat">
+              <span class="hero-stat-value">44x</span>
+              <span class="hero-stat-label">faster convergence</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Teaser -->
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <div class="teaser-summary">
+        <p class="teaser-tagline">
+          Default HNSW settings rarely sit on the right constraint-aware frontier.
+        </p>
+        <div class="teaser-points">
+          <div>
+            <strong>Black-box tuning</strong>
+            <span>spends its budget rebuilding expensive indexes and sampling noisy, discrete configurations.</span>
+          </div>
+          <div>
+            <strong>CHAT</strong>
+            <span>uses HNSW-specific structure to search constraint boundaries directly and validate only useful candidates.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Paper abstract -->
+<section class="hero is-light">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-full-width">
+          <h2 class="title is-3">Abstract</h2>
+          <div class="column has-text-justified" style="padding: 0;">
+            <p>
+              Vector databases are now a core substrate for modern retrieval systems,
+              including Retrieval-Augmented Generation pipelines. Their search layer must
+              satisfy several demands at once: high recall, high throughput, bounded latency,
+              manageable build time, and compact index size. HNSW is widely adopted because
+              it offers an attractive recall-latency trade-off, yet its three central knobs,
+              <em>M</em>, <em>efc</em>, and <em>efs</em>, interact in nonlinear ways that
+              make production tuning costly and brittle.
+            </p>
+            <p>
+              This paper shows that the HNSW search space is not arbitrary. Query-time
+              candidate expansion induces monotone feasibility boundaries; construction-time
+              parameters exhibit dominant unimodal behavior after the search boundary is
+              selected; and resource usage separates into compact build-time and index-size
+              dependencies. CHAT uses these structural regularities to tune HNSW with
+              deterministic, sample-efficient search while pruning resource-infeasible
+              configurations before full index construction.
+            </p>
+            <p>
+              Across multiple datasets and HNSW-based vector search engines, CHAT finds
+              configurations that maximize Recall or QPS while satisfying constraints on
+              accuracy, throughput, build time, index size, and tuning budget.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Motivation -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Motivation</h2>
+        <p class="section-lead">
+          HNSW looks simple from the outside, but a production deployment rarely asks for
+          a single metric. It asks for a configuration that is fast enough, accurate enough,
+          small enough, cheap enough to build, and discoverable within a limited tuning window.
+        </p>
+
+        <div class="motivation-grid">
+          <div class="motivation-item">
+            <h3 class="title is-5">Defaults Are Dataset-Specific Compromises</h3>
+            <p>
+              The same default parameters can be conservative on one workload and infeasible on
+              another. Under identical Recall or QPS targets, the best configuration can move
+              substantially across datasets.
+            </p>
+          </div>
+          <div class="motivation-item">
+            <h3 class="title is-5">Constraints Change the Objective</h3>
+            <p>
+              A Recall constraint asks the tuner to maximize throughput at the smallest useful
+              search breadth, while a QPS constraint asks it to spend just enough search effort
+              to improve accuracy without violating service targets.
+            </p>
+          </div>
+          <div class="motivation-item">
+            <h3 class="title is-5">Index Builds Are Expensive Evidence</h3>
+            <p>
+              Construction parameters require rebuilding the graph, so naive exploration wastes
+              most of its budget on configurations that are either resource-infeasible or far
+              from the constraint boundary.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contributions -->
+<section class="section compact-section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Contributions</h2>
+        <div class="contribution-grid">
+          <div class="contribution-card">
+            <span class="contribution-index">01</span>
+            <h3 class="title is-5">A Constraint-Aware Formulation</h3>
+            <p>
+              We cast HNSW tuning as selecting <em>M</em>, <em>efc</em>, and <em>efs</em>
+              under explicit performance, resource, and tuning-budget constraints.
+            </p>
+          </div>
+          <div class="contribution-card">
+            <span class="contribution-index">02</span>
+            <h3 class="title is-5">Structural Regularities</h3>
+            <p>
+              We identify monotone query-time boundaries, dominant unimodal construction
+              trends, and separable resource behavior in standard HNSW implementations.
+            </p>
+          </div>
+          <div class="contribution-card">
+            <span class="contribution-index">03</span>
+            <h3 class="title is-5">CHAT</h3>
+            <p>
+              We introduce an API-level black-box, HNSW-structure-aware tuner that combines
+              hierarchical search, boundary search, and measured validation.
+            </p>
+          </div>
+          <div class="contribution-card">
+            <span class="contribution-index">04</span>
+            <h3 class="title is-5">Resource-Aware Pruning</h3>
+            <p>
+              We develop compact build-time and index-size models that prune unlikely
+              candidates before full graph construction while preserving final validation.
+            </p>
+          </div>
+          <div class="contribution-card">
+            <span class="contribution-index">05</span>
+            <h3 class="title is-5">Broad Evaluation</h3>
+            <p>
+              We validate CHAT across Faiss, Hnswlib, and Milvus on five representative
+              datasets, comparing against exhaustive search and strong black-box tuners.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Structural Insights -->
+<section class="section insight-section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Structural Insights</h2>
+        <p class="section-lead">
+          CHAT is not a generic optimizer with a new acquisition function. Its efficiency
+          comes from the mechanics of HNSW itself: how query breadth changes performance,
+          how graph construction improves then saturates, and how resource costs separate.
+        </p>
+
+        <div class="insight-grid">
+          <div class="insight-card">
+            <h3 class="title is-5">Monotone Search-Time Feasibility</h3>
+            <p>
+              On a fixed HNSW graph, larger <em>efs</em> explores more candidates. This
+              makes Recall non-decreasing and query cost non-decreasing, so feasibility
+              can be searched by boundary localization rather than blind sampling.
+            </p>
+          </div>
+          <div class="insight-card">
+            <h3 class="title is-5">Dominant Unimodality</h3>
+            <p>
+              Increasing <em>efc</em> or <em>M</em> can improve graph navigability, but
+              after useful connectivity saturates, additional construction effort mainly
+              increases traversal overhead. The constrained objective therefore rises,
+              peaks, and then declines in the relevant region.
+            </p>
+          </div>
+          <div class="insight-card">
+            <h3 class="title is-5">Separable Resources</h3>
+            <p>
+              Build time depends strongly on construction search breadth and realized
+              connectivity, while index size is governed primarily by the degree capacity
+              induced by <em>M</em>. CHAT turns this separation into early pruning.
+            </p>
+          </div>
+        </div>
+
+        <div class="text-panel">
+          <h3 class="title is-5">Why These Properties Matter</h3>
+          <p>
+            For a fixed HNSW graph, <em>efs</em> forms an ordered knob: increasing it
+            broadens query-time exploration, usually improving Recall while increasing
+            latency and reducing QPS. This turns constraint satisfaction into a boundary
+            search problem.
+          </p>
+          <p>
+            Construction knobs behave differently. Larger <em>efc</em> and <em>M</em>
+            can improve graph quality, but only until useful routing alternatives saturate.
+            Beyond that point, more connectivity can add traversal overhead without
+            meaningful accuracy gain. CHAT uses this dominant trend to shrink the
+            construction search space instead of exhaustively enumerating it.
+          </p>
+          <p>
+            Resource behavior is also exploitable: build time grows with construction
+            search effort and realized graph connectivity, whereas index size is driven
+            mainly by the degree budget. This lets CHAT avoid many expensive builds while
+            still validating candidates that pass the resource filter.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Method -->
+<section class="section method-section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Method</h2>
+        <div class="content has-text-justified">
+          <p>
+            CHAT decomposes the original three-dimensional tuning problem into a sequence
+            of smaller decisions. It first proposes construction parameters, checks whether
+            they are likely to satisfy resource budgets, builds only surviving candidates,
+            and then searches for the boundary <em>efs</em> value on the completed index.
+            Measurements from each build and validation run feed back into the search.
+          </p>
+        </div>
+
+        <figure class="paper-figure method-figure">
+          <img src="./static/images/chat_architecture.png"
+               alt="Architecture and iterative tuning workflow of CHAT">
+        </figure>
+        <h3 class="has-text-centered figure-caption">
+          CHAT iteratively proposes HNSW configurations, filters resource-infeasible
+          candidates, tunes <em>efs</em> on built indexes, and feeds measurements back into
+          the constraint models.
+        </h3>
+
+        <div class="process-list">
+          <div class="process-step">
+            <span class="process-number">1</span>
+            <div>
+              <h3 class="title is-5">Propose a Construction Region</h3>
+              <p>
+                The outer search localizes promising <em>M</em> values, while the inner
+                search selects candidate <em>efc</em> values for each fixed <em>M</em>.
+              </p>
+            </div>
+          </div>
+          <div class="process-step">
+            <span class="process-number">2</span>
+            <div>
+              <h3 class="title is-5">Filter by Resource Feasibility</h3>
+              <p>
+                Conservative build-time and index-size models reject candidates likely to
+                violate resource budgets before expensive graph construction begins.
+              </p>
+            </div>
+          </div>
+          <div class="process-step">
+            <span class="process-number">3</span>
+            <div>
+              <h3 class="title is-5">Build, Measure, and Calibrate</h3>
+              <p>
+                Candidates that pass the filter are built on the target backend. CHAT records
+                build time, index size, Recall, and QPS to update the search history.
+              </p>
+            </div>
+          </div>
+          <div class="process-step">
+            <span class="process-number">4</span>
+            <div>
+              <h3 class="title is-5">Locate the Boundary <em>efs</em></h3>
+              <p>
+                If Recall is constrained, CHAT chooses the smallest feasible <em>efs</em>
+                to preserve QPS. If QPS is constrained, it chooses the largest feasible
+                <em>efs</em> to recover Recall.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="method-grid">
+          <div class="method-card accent-a">
+            <h3 class="title is-5">API-Level Black Box</h3>
+            <p>
+              CHAT does not inspect adjacency lists, layer populations, or degree
+              distributions. It uses standard build/query APIs and validation metrics.
+            </p>
+          </div>
+          <div class="method-card accent-b">
+            <h3 class="title is-5">Structure-Aware Search</h3>
+            <p>
+              The search procedure is specialized to standard HNSW semantics: bounded-degree
+              construction, greedy layer traversal, and diversified neighbor selection.
+            </p>
+          </div>
+          <div class="method-card accent-c">
+            <h3 class="title is-5">Validated Output</h3>
+            <p>
+              Resource models only prune. Any configuration returned by CHAT has survived
+              actual construction, measurement, and performance validation.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Results -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Results</h2>
+        <div class="content has-text-justified">
+          <p>
+            CHAT is evaluated on nytimes, glove, sift, deep1M, and youtube datasets with
+            Faiss and Hnswlib, plus an additional Milvus study. Under Recall constraints,
+            CHAT maximizes throughput; under QPS constraints, it maximizes Recall while
+            satisfying the required service target.
+          </p>
+          <p>
+            The experiments compare CHAT with exhaustive search, Grid Search, Random Search,
+            Optuna, NSGA-II, Expected Constrained Improvement, and VDTuner. All methods are
+            evaluated under the same tuning budget, and reported configurations must satisfy
+            the active performance and resource constraints.
+          </p>
+        </div>
+
+        <div class="result-grid">
+          <div class="result-card">
+            <div class="stat-number">98.03%-99.97%</div>
+            <p>of Oracle QPS under Recall constraints.</p>
+          </div>
+          <div class="result-card">
+            <div class="stat-number">99.11%-99.99%</div>
+            <p>of Oracle Recall under QPS constraints.</p>
+          </div>
+          <div class="result-card">
+            <div class="stat-number">up to 45%</div>
+            <p>higher throughput than strong black-box tuning baselines.</p>
+          </div>
+          <div class="result-card">
+            <div class="stat-number">up to 44x</div>
+            <p>faster convergence to 95% of the Oracle objective.</p>
+          </div>
+        </div>
+
+        <figure class="paper-figure results-figure">
+          <img src="./static/images/chat_results.png"
+               alt="Tuning performance over time for CHAT and baseline methods">
+        </figure>
+        <h3 class="has-text-centered figure-caption">
+          Main tuning results: CHAT reaches high-quality configurations quickly across
+          datasets, backends, and constraint settings, staying close to the exhaustive-search
+          oracle while outperforming black-box baselines.
+        </h3>
+
+        <div class="evaluation-table-wrapper">
+          <table class="table is-striped is-hoverable is-fullwidth evaluation-table">
+            <thead>
+              <tr>
+                <th>Dimension</th>
+                <th>Setup</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th>Backends</th>
+                <td>Faiss, Hnswlib, and Milvus</td>
+              </tr>
+              <tr>
+                <th>Datasets</th>
+                <td>nytimes, glove, sift, deep1M, and youtube</td>
+              </tr>
+              <tr>
+                <th>Knobs</th>
+                <td><em>M</em> in [4, 64], <em>efc</em> in [8, 1024], <em>efs</em> in [10, 1024]</td>
+              </tr>
+              <tr>
+                <th>Constraints</th>
+                <td>Recall, QPS, build time, index size, tail latency, and tuning budget</td>
+              </tr>
+              <tr>
+                <th>Baselines</th>
+                <td>Oracle, Grid, Random, Optuna, NSGA-II, ECI, and VDTuner</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="resource-summary-grid">
+          <div class="resource-summary">
+            <h3 class="title is-5">Performance</h3>
+            <p>
+              CHAT stays close to exhaustive search while consistently reaching strong
+              configurations earlier than generic tuners. Under Recall constraints it
+              improves throughput by up to 45%, and under QPS constraints it improves
+              Recall by up to 11% over the best baselines.
+            </p>
+          </div>
+          <div class="resource-summary">
+            <h3 class="title is-5">Resource Constraints</h3>
+            <p>
+              The resource filter reduces unnecessary index builds and total tuning time
+              without changing the final selected configuration in the reported settings.
+              This is especially important because construction-time exploration dominates
+              practical tuning cost.
+            </p>
+          </div>
+          <div class="resource-summary">
+            <h3 class="title is-5">Deployment Robustness</h3>
+            <p>
+              CHAT also supports query-side constraints such as hard-query Recall and P95/P99
+              latency. Because these constraints can be expressed through the same ordered
+              <em>efs</em> boundary, the tuner can handle stricter service-level objectives
+              without changing its core workflow.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Takeaway -->
+<section class="section takeaway-section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Takeaway</h2>
+        <p class="takeaway-text">
+          CHAT shows that HNSW tuning does not need to be treated as an opaque optimization
+          problem. By respecting the algorithm's structural properties, it can navigate
+          narrow feasibility regions, avoid expensive invalid builds, and return validated
+          configurations that are close to exhaustive-search quality within practical tuning
+          budgets.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BibTeX -->
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@inproceedings{choi2027chat,
+  author    = {Geon Choi and Hoeun Lee and Jaeyoung Do},
+  title     = {Exploiting Structural Properties for Efficient Constraint-Aware HNSW Hyperparameter Tuning},
+  booktitle = {Proceedings of the 2027 International Conference on Management of Data (SIGMOD '27)},
+  year      = {2027},
+}</code></pre>
+  </div>
+</section>
+
+<!-- Footer (Don't change) -->
+<footer class="footer" style="padding-bottom: 40px;">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This website is adapted from <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>, licensed under a <a rel="license"
+                                                href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+        </div>
+        <div class="content has-text-centered">
+          <a href="https://en.snu.ac.kr">
+            <img src="./static/images/snu_logo.png" alt="Seoul National University logo" style="max-height: 48px; margin: 6px 10px;">
+          </a>
+          <a href="https://aidas.snu.ac.kr">
+            <img src="./static/images/aidaslab_logo.png" alt="AIDAS Lab logo" style="max-height: 36px; margin: 10px 30px;">
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
