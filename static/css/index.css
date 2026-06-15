@@ -235,8 +235,7 @@ body {
 }
 
 .motivation-grid,
-.contribution-grid,
-.insight-grid {
+.contribution-grid {
   display: grid;
   gap: 1rem;
 }
@@ -249,15 +248,8 @@ body {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.insight-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  align-items: start;
-  margin-top: 2rem;
-}
-
 .motivation-item,
-.contribution-card,
-.insight-card {
+.contribution-card {
   border: 1px solid #e2e7ef;
   border-radius: 8px;
   background: #ffffff;
@@ -289,21 +281,48 @@ body {
   grid-column: 1 / -1;
 }
 
-.insight-card {
-  background: #fbfcfe;
+.insight-detail-list {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 2rem;
 }
 
-.insight-evidence-card {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  padding: 0.9rem;
+.insight-detail {
+  --insight-media-offset: 4.15rem;
+  align-items: start;
+  background: #ffffff;
+  border: 1px solid #e2e7ef;
+  border-radius: 8px;
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
+  padding: 1.25rem;
 }
 
-.insight-evidence-card .title {
-  align-items: flex-start;
-  display: flex;
-  min-height: 3.05rem;
+.insight-detail-copy {
+  align-self: start;
+}
+
+.insight-index {
+  color: #248f66;
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  margin-bottom: 0.45rem;
+}
+
+.insight-detail .title {
+  margin-bottom: 0.75rem;
+}
+
+.insight-detail p {
+  color: #4a4a4a;
+  line-height: 1.62;
+  margin-bottom: 0.75rem;
+}
+
+.insight-detail p:last-child {
   margin-bottom: 0;
 }
 
@@ -312,21 +331,21 @@ body {
 }
 
 .insight-figure img {
-  background: #ffffff;
-  border: 1px solid #e7ebf0;
-  border-radius: 6px;
   display: block;
   height: auto;
   width: 100%;
 }
 
-.insight-resource-pair {
-  display: grid;
-  gap: 0.55rem;
+.insight-detail-figure {
+  align-self: start;
+  margin-top: var(--insight-media-offset);
 }
 
-.insight-summary-panel {
-  margin-top: 1.25rem;
+.insight-resource-figures {
+  align-self: start;
+  display: grid;
+  gap: 0.75rem;
+  margin-top: var(--insight-media-offset);
 }
 
 .text-panel {
@@ -349,10 +368,17 @@ body {
 }
 
 .motivation-item p,
-.contribution-card p,
-.insight-card p {
+.contribution-card p {
   color: #4a4a4a;
   line-height: 1.58;
+}
+
+.contribution-card .title {
+  margin-bottom: 0.45rem;
+}
+
+.contribution-card p {
+  margin-bottom: 0;
 }
 
 .contribution-index {
@@ -361,7 +387,7 @@ body {
   font-family: "Lato", sans-serif;
   font-size: 0.88rem;
   font-weight: 700;
-  margin-bottom: 0.65rem;
+  margin-bottom: 0.45rem;
 }
 
 .compact-section {
@@ -466,9 +492,14 @@ body {
   width: 2rem;
 }
 
+.process-step .title {
+  margin-bottom: 0.45rem;
+}
+
 .process-step p {
   color: #4a4a4a;
   line-height: 1.58;
+  margin-bottom: 0;
 }
 
 .evaluation-table-wrapper {
@@ -534,11 +565,20 @@ body {
   .teaser-points,
   .motivation-grid,
   .contribution-grid,
-  .insight-grid,
   .method-grid,
   .resource-summary-grid,
   .result-grid {
     grid-template-columns: 1fr;
+  }
+
+  .insight-detail {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+  }
+
+  .insight-detail-figure,
+  .insight-resource-figures {
+    margin-top: 0;
   }
 
   .contribution-card:nth-child(5) {

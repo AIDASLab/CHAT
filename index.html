@@ -6,6 +6,20 @@
         content="Project page for CHAT, a constraint-aware tuning framework for HNSW hyperparameters.">
   <meta name="keywords" content="CHAT, HNSW, VectorDB, Approximate Nearest Neighbor Search, Hyperparameter Tuning">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://aidaslab.github.io/CHAT/">
+  <meta property="og:title" content="Exploiting Structural Properties for Efficient Constraint-Aware HNSW Hyperparameter Tuning">
+  <meta property="og:description"
+        content="CHAT turns HNSW hyperparameter tuning from expensive black-box trial-and-error into a structure-aware search over constraint boundaries.">
+  <meta property="og:image" content="https://aidaslab.github.io/CHAT/static/images/social_preview.png">
+  <meta property="og:image:width" content="1012">
+  <meta property="og:image:height" content="821">
+  <meta property="og:image:alt" content="CHAT project page preview">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Exploiting Structural Properties for Efficient Constraint-Aware HNSW Hyperparameter Tuning">
+  <meta name="twitter:description"
+        content="CHAT turns HNSW hyperparameter tuning from expensive black-box trial-and-error into a structure-aware search over constraint boundaries.">
+  <meta name="twitter:image" content="https://aidaslab.github.io/CHAT/static/images/social_preview.png">
   <title>Exploiting Structural Properties for Efficient Constraint-Aware HNSW Hyperparameter Tuning</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -130,7 +144,7 @@
               <span class="hero-stat-label">higher Recall</span>
             </div>
             <div class="hero-stat">
-              <span class="hero-stat-value">44x</span>
+              <span class="hero-stat-value">44×</span>
               <span class="hero-stat-label">faster convergence</span>
             </div>
           </div>
@@ -309,32 +323,66 @@
           how graph construction improves then saturates, and how resource costs separate.
         </p>
 
-        <div class="insight-grid insight-evidence-grid">
-          <div class="insight-card insight-evidence-card">
-            <h3 class="title is-5">Monotone Search-Time Feasibility</h3>
-            <figure class="insight-figure">
+        <div class="insight-detail-list">
+          <article class="insight-detail">
+            <div class="insight-detail-copy">
+              <span class="insight-index">01</span>
+              <h3 class="title is-4">Monotone Search-Time Feasibility</h3>
+              <p>
+                For a fixed HNSW graph, <em>efs</em> is an ordered query-time knob.
+                Larger <em>efs</em> explores more candidates, so Recall increases toward
+                saturation while QPS decreases.
+              </p>
+              <p>
+                CHAT uses this monotonic structure to localize the smallest feasible
+                <em>efs</em> under a Recall constraint, or the largest feasible
+                <em>efs</em> under a throughput constraint, instead of blindly sampling
+                query settings.
+              </p>
+            </div>
+            <figure class="insight-figure insight-detail-figure">
               <img src="./static/images/structural_efs_tradeoff.png"
                    alt="Effect of efs on Recall and QPS">
             </figure>
-            <p>
-              Increasing <em>efs</em> raises Recall while reducing QPS on a fixed graph,
-              turning Recall or throughput constraints into ordered boundary searches.
-            </p>
-          </div>
-          <div class="insight-card insight-evidence-card">
-            <h3 class="title is-5">Dominant Unimodality</h3>
-            <figure class="insight-figure">
+          </article>
+
+          <article class="insight-detail">
+            <div class="insight-detail-copy">
+              <span class="insight-index">02</span>
+              <h3 class="title is-4">Dominant Unimodality</h3>
+              <p>
+                Construction knobs such as <em>efc</em> improve graph quality at first,
+                but the benefit saturates. Past that point, extra construction effort
+                mainly increases traversal overhead.
+              </p>
+              <p>
+                The resulting constrained objective follows a dominant rise-then-fall
+                trend, allowing CHAT to search the construction space directionally
+                rather than enumerate every <em>(M, efc)</em> pair.
+              </p>
+            </div>
+            <figure class="insight-figure insight-detail-figure">
               <img src="./static/images/structural_unimodality.png"
                    alt="Dominant unimodal objective trends as efc varies">
             </figure>
-            <p>
-              As <em>efc</em> improves graph quality, the constrained objective first
-              improves and then declines once extra traversal overhead dominates.
-            </p>
-          </div>
-          <div class="insight-card insight-evidence-card">
-            <h3 class="title is-5">Separable Resources</h3>
-            <div class="insight-resource-pair">
+          </article>
+
+          <article class="insight-detail">
+            <div class="insight-detail-copy">
+              <span class="insight-index">03</span>
+              <h3 class="title is-4">Separable Resources</h3>
+              <p>
+                Resource costs do not move as a single black-box quantity. Build time
+                follows construction search breadth and realized connectivity, while
+                index size is governed mainly by the degree budget induced by <em>M</em>.
+              </p>
+              <p>
+                CHAT turns this separation into early pruning: resource-infeasible
+                construction candidates can be rejected before spending the full cost of
+                validation.
+              </p>
+            </div>
+            <div class="insight-resource-figures">
               <figure class="insight-figure">
                 <img src="./static/images/structural_build_time.png"
                      alt="Build time and realized connectivity as construction parameters vary">
@@ -344,21 +392,7 @@
                      alt="Index size dependence on M and efc">
               </figure>
             </div>
-            <p>
-              Build time follows construction effort and realized connectivity, while
-              index size is governed mainly by the degree budget <em>M</em>.
-            </p>
-          </div>
-        </div>
-
-        <div class="text-panel insight-summary-panel">
-          <h3 class="title is-5">Why CHAT Can Search Less</h3>
-          <p>
-            These empirical regularities justify CHAT's compact tuning loop: localize the
-            <em>efs</em> feasibility boundary, search the dominant construction trend
-            instead of enumerating every <em>(M, efc)</em> pair, and prune resource-heavy
-            candidates before expensive validation.
-          </p>
+          </article>
         </div>
       </div>
     </div>
@@ -486,11 +520,11 @@
 
         <div class="result-grid">
           <div class="result-card">
-            <div class="stat-number">98.03%-99.97%</div>
+            <div class="stat-number">98.03% - 99.97%</div>
             <p>of Oracle QPS under Recall constraints.</p>
           </div>
           <div class="result-card">
-            <div class="stat-number">99.11%-99.99%</div>
+            <div class="stat-number">99.11% - 99.99%</div>
             <p>of Oracle Recall under QPS constraints.</p>
           </div>
           <div class="result-card">
@@ -498,7 +532,7 @@
             <p>higher throughput than strong black-box tuning baselines.</p>
           </div>
           <div class="result-card">
-            <div class="stat-number">up to 44x</div>
+            <div class="stat-number">up to 44×</div>
             <p>faster convergence to 95% of the Oracle objective.</p>
           </div>
         </div>
@@ -602,10 +636,10 @@
 <section class="section" id="BibTeX">
   <div class="container is-max-desktop content">
     <h2 class="title">BibTeX</h2>
-    <pre><code>@inproceedings{choi2027chat,
-  author    = {Geon Choi and Hoeun Lee and Jaeyoung Do},
+    <pre><code>@article{choi2027chat,
+  author    = {Choi, Geon and Lee, Hoeun and Do, Jaeyoung},
   title     = {Exploiting Structural Properties for Efficient Constraint-Aware HNSW Hyperparameter Tuning},
-  booktitle = {Proceedings of the 2027 International Conference on Management of Data (SIGMOD '27)},
+  journal   = {Proceedings of the 2027 International Conference on Management of Data (SIGMOD)},
   year      = {2027},
 }</code></pre>
   </div>
