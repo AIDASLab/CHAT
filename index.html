@@ -8,7 +8,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Exploiting Structural Properties for Efficient Constraint-Aware HNSW Hyperparameter Tuning</title>
 
-  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap"
         rel="stylesheet">
 
   <link rel="stylesheet" href="./static/css/bulma.min.css">
@@ -307,54 +309,55 @@
           how graph construction improves then saturates, and how resource costs separate.
         </p>
 
-        <div class="insight-grid">
-          <div class="insight-card">
+        <div class="insight-grid insight-evidence-grid">
+          <div class="insight-card insight-evidence-card">
             <h3 class="title is-5">Monotone Search-Time Feasibility</h3>
+            <figure class="insight-figure">
+              <img src="./static/images/structural_efs_tradeoff.png"
+                   alt="Effect of efs on Recall and QPS">
+            </figure>
             <p>
-              On a fixed HNSW graph, larger <em>efs</em> explores more candidates. This
-              makes Recall non-decreasing and query cost non-decreasing, so feasibility
-              can be searched by boundary localization rather than blind sampling.
+              Increasing <em>efs</em> raises Recall while reducing QPS on a fixed graph,
+              turning Recall or throughput constraints into ordered boundary searches.
             </p>
           </div>
-          <div class="insight-card">
+          <div class="insight-card insight-evidence-card">
             <h3 class="title is-5">Dominant Unimodality</h3>
+            <figure class="insight-figure">
+              <img src="./static/images/structural_unimodality.png"
+                   alt="Dominant unimodal objective trends as efc varies">
+            </figure>
             <p>
-              Increasing <em>efc</em> or <em>M</em> can improve graph navigability, but
-              after useful connectivity saturates, additional construction effort mainly
-              increases traversal overhead. The constrained objective therefore rises,
-              peaks, and then declines in the relevant region.
+              As <em>efc</em> improves graph quality, the constrained objective first
+              improves and then declines once extra traversal overhead dominates.
             </p>
           </div>
-          <div class="insight-card">
+          <div class="insight-card insight-evidence-card">
             <h3 class="title is-5">Separable Resources</h3>
+            <div class="insight-resource-pair">
+              <figure class="insight-figure">
+                <img src="./static/images/structural_build_time.png"
+                     alt="Build time and realized connectivity as construction parameters vary">
+              </figure>
+              <figure class="insight-figure">
+                <img src="./static/images/structural_index_size.png"
+                     alt="Index size dependence on M and efc">
+              </figure>
+            </div>
             <p>
-              Build time depends strongly on construction search breadth and realized
-              connectivity, while index size is governed primarily by the degree capacity
-              induced by <em>M</em>. CHAT turns this separation into early pruning.
+              Build time follows construction effort and realized connectivity, while
+              index size is governed mainly by the degree budget <em>M</em>.
             </p>
           </div>
         </div>
 
-        <div class="text-panel">
-          <h3 class="title is-5">Why These Properties Matter</h3>
+        <div class="text-panel insight-summary-panel">
+          <h3 class="title is-5">Why CHAT Can Search Less</h3>
           <p>
-            For a fixed HNSW graph, <em>efs</em> forms an ordered knob: increasing it
-            broadens query-time exploration, usually improving Recall while increasing
-            latency and reducing QPS. This turns constraint satisfaction into a boundary
-            search problem.
-          </p>
-          <p>
-            Construction knobs behave differently. Larger <em>efc</em> and <em>M</em>
-            can improve graph quality, but only until useful routing alternatives saturate.
-            Beyond that point, more connectivity can add traversal overhead without
-            meaningful accuracy gain. CHAT uses this dominant trend to shrink the
-            construction search space instead of exhaustively enumerating it.
-          </p>
-          <p>
-            Resource behavior is also exploitable: build time grows with construction
-            search effort and realized graph connectivity, whereas index size is driven
-            mainly by the degree budget. This lets CHAT avoid many expensive builds while
-            still validating candidates that pass the resource filter.
+            These empirical regularities justify CHAT's compact tuning loop: localize the
+            <em>efs</em> feasibility boundary, search the dominant construction trend
+            instead of enumerating every <em>(M, efc)</em> pair, and prune resource-heavy
+            candidates before expensive validation.
           </p>
         </div>
       </div>
